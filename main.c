@@ -8,6 +8,7 @@
 #include <dirent.h>
 #include <signal.h>
 #include <sys/mman.h>
+#include <syslog.h>
 
 #define DEFAULT_MODE 0755
 
@@ -23,7 +24,6 @@ void handle_signal(int sig) {
 
 void copy_file(const char *src, const char *dst, off_t size) {
     if (size >= mmap_threshold) {
-
         int src_fd = open(src, O_RDONLY);
         int dst_fd = open(dst, O_RDWR | O_CREAT | O_TRUNC, 0644);
         if (src_fd == -1 || dst_fd == -1) return;
@@ -42,6 +42,8 @@ void copy_file(const char *src, const char *dst, off_t size) {
         munmap(dst_map, size);
         close(src_fd);
         close(dst_fd);
+
+        syslog(LOG_INFO, "Skopiowano plik: %s -> %s", src, dst);
     } else {
         int src_fd = open(src, O_RDONLY), dst_fd = open(dst, O_WRONLY | O_CREAT | O_TRUNC, 0644);
         if (src_fd == -1 || dst_fd == -1) return;
@@ -53,6 +55,8 @@ void copy_file(const char *src, const char *dst, off_t size) {
 
         close(src_fd); 
         close(dst_fd);
+
+        syslog(LOG_INFO, "Skopiowano plik: %s -> %s", src, dst);
     }
 }
 
@@ -77,9 +81,11 @@ void remove_extraneous_files(const char *src, const char *dst) {
                         char cmd[1050];
                         snprintf(cmd, sizeof(cmd), "rm -rf %s", dst_path);
                         system(cmd);
+                        syslog(LOG_INFO, "Usunięto katalog: %s", dst_path);
                     }
                 } else {
                     unlink(dst_path);
+                    syslog(LOG_INFO, "Usunięto plik: %s", dst_path);
                 }
             }
         }
@@ -123,6 +129,8 @@ void daemonize(const char *src, const char *dst) {
 }
 
 int main(int argc, char *argv[]) {
+    openlog(argv[0], LOG_PID | LOG_CONS, LOG_USER);
+
     if (argc < 3) {
         fprintf(stderr, "Użycie: %s <źródło> <cel> [-R] [czas] [próg mmap]\n", argv[0]);
         return EXIT_FAILURE;
@@ -137,6 +145,8 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Katalog docelowy nie istnieje!\n");
         if(!mkdir(argv[2], DEFAULT_MODE)) {
             fprintf(stderr, "Utworzono katalog: %s\n", argv[2]);
+            syslog(LOG_INFO, "Utworzono katalog: %s\n", argv[2]);
+
         } else {
             return EXIT_FAILURE;
         }
@@ -154,6 +164,7 @@ int main(int argc, char *argv[]) {
 
     if(!sleep_time) sleep_time = 300;
 
-
     daemonize(argv[1], argv[2]);
+
+    closelog();
 }
