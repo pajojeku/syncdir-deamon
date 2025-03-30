@@ -12,6 +12,7 @@
 #define DEFAULT_MODE 0755
 
 typedef struct stat Stat;
+
 unsigned int sleep_time = 0;
 int recursive = 0;
 int mmap_threshold = 10 * 1024 * 1024;
@@ -122,9 +123,11 @@ void daemonize(const char *src, const char *dst) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc < 3) 
-        return fprintf(stderr, "Użycie: %s <źródło> <cel> [-R] [czas] [próg mmap]\n", argv[0]), EXIT_FAILURE;
-
+    if (argc < 3) {
+        fprintf(stderr, "Użycie: %s <źródło> <cel> [-R] [czas] [próg mmap]\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+        
     Stat src_stat, dst_stat;
     if (stat(argv[1], &src_stat) == -1 || !S_ISDIR(src_stat.st_mode)) {
         fprintf(stderr, "Błąd: Źródło musi być katalogiem\n");
