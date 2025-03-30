@@ -1,1 +1,1 @@
-kill -SIGUSR1 $(pgrep -o nazwa_procesu)
+kill -SIGUSR1 `pgrep syncdir-deamon`
