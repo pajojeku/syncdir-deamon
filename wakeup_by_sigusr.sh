@@ -1,0 +1,1 @@
+kill -SIGUSR1 $(pgrep -o nazwa_procesu)
