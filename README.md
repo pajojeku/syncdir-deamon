@@ -41,7 +41,7 @@
 To sync two directories every 2 minutes, with the recursive flag enabled:
 
 ```bash
-./syncdaemon /path/to/source /path/to/destination -R 120
+./syncdir-deamon /path/to/source /path/to/destination -R 120
 ```
 
 ## License
