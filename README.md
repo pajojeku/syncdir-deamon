@@ -1,7 +1,7 @@
 
-# SyncDaemon
+# syncdir-deamon
 
-`SyncDaemon` is a simple daemon written in C that synchronizes two directories. The program copies files from a source directory to a destination directory, preserving the folder structure and updating files that have been modified. The daemon runs in the background, periodically checking for changes.
+`syncdir-deamon` is a simple daemon written in C that synchronizes two directories. The program copies files from a source directory to a destination directory, preserving the folder structure and updating files that have been modified. The daemon runs in the background, periodically checking for changes.
 
 ## Features
 
@@ -15,19 +15,19 @@
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/SyncDaemon.git
-   cd SyncDaemon
+   git clone https://github.com/pajojeku/syncdir-deamon.git
+   cd syncdir-deamon
    ```
 
 2. Compile the program:
    ```bash
-   gcc -o syncdaemon syncdaemon.c
+   gcc -o syncdir-deamon main.c
    ```
 
 ## Usage
 
 ```bash
-./syncdaemon <source_directory> <destination_directory> [-R] [sleep_time] [mmap_threshold]
+./syncdir-deamon <source_directory> <destination_directory> [-R] [sleep_time] [mmap_threshold]
 ```
 
 - `<source_directory>`: The source directory to sync.
