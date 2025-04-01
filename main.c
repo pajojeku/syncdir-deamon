@@ -194,7 +194,7 @@ int main(int argc, char *argv[]) {
     openlog(argv[0], LOG_PID | LOG_CONS, LOG_USER);
 
     // Sprawdzenie poprawności argumentów wywołania
-    if (argc < 3) {
+    if (argc < 3 || argc > 5) {
         fprintf(stderr, "Użycie: %s <źródło> <cel> [-R] [czas] [próg mmap]\n", argv[0]);
         return EXIT_FAILURE;
     }
