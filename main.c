@@ -53,7 +53,7 @@ void copy_file(const char *src, const char *dst, off_t size) {
         close(dst_fd);
 
         // Zapis do sysloga
-        syslog(LOG_INFO, "Skopiowano plik: %s -> %s", src, dst);
+        syslog(LOG_INFO, "Skopiowano plik (mmap): %s -> %s", src, dst);
     } else {
         // Kopiowanie tradycyjne, buforowane, gdy plik jest mniejszy od progu
         int src_fd = open(src, O_RDONLY);
