@@ -75,6 +75,36 @@ void copy_file(const char *src, const char *dst, off_t size) {
     }
 }
 
+
+//Funkcja usuwająca katalog wywołaniami linuxowymi
+void remove_directory(const char *path) {
+    DIR *dir = opendir(path);
+    if (!dir) return;
+    
+    struct dirent *entry;
+    char full_path[1024];
+    struct stat statbuf;
+    
+    while ((entry = readdir(dir)) != NULL) {
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+            continue;
+        
+        snprintf(full_path, sizeof(full_path), "%s/%s", path, entry->d_name);
+        
+        if (lstat(full_path, &statbuf) == 0) {
+            if (S_ISDIR(statbuf.st_mode)) {
+                remove_directory(full_path);
+            } else {
+                unlink(full_path);
+            }
+        }
+    }
+    
+    closedir(dir);
+    rmdir(path);
+}
+
+
 // Funkcja usuwająca zbędne pliki i katalogi w katalogu docelowym,
 // które nie występują w katalogu źródłowym
 void remove_extraneous_files(const char *src, const char *dst) {
@@ -97,15 +127,11 @@ void remove_extraneous_files(const char *src, const char *dst) {
             struct stat dst_stat;
             if (lstat(dst_path, &dst_stat) != -1) {
                 if (S_ISDIR(dst_stat.st_mode)) {
-                    // Usuwanie rekurencyjne katalogu, jeśli ustawiona jest opcja recursive
                     if (recursive) {
-                        char cmd[1050];
-                        snprintf(cmd, sizeof(cmd), "rm -rf %s", dst_path);
-                        system(cmd);
+                        remove_directory(dst_path);
                         syslog(LOG_INFO, "Usunięto katalog: %s", dst_path);
                     }
                 } else {
-                    // Usuwanie pliku
                     unlink(dst_path);
                     syslog(LOG_INFO, "Usunięto plik: %s", dst_path);
                 }
